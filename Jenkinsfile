@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'vivekdalsaniya/notes-app:latest'
-        DOCKERHUB_CREDS = credentials('dockercred')  // Your DockerHub creds ID in Jenkins
+        DOCKERHUB_CREDS = credentials('dockercreds')  // Your DockerHub creds ID in Jenkins
     }
 
     stages {
