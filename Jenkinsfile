@@ -39,7 +39,7 @@ pipeline {
                     docker pull $DOCKER_IMAGE
                     docker stop notes-app || true
                     docker rm notes-app || true
-                    docker run -d --name notes-app -p 8000:8000 notes-app
+                    docker run -d --name vivekdalsaniya/notes-app -p 8000:8000 vivekdalsaniya/notes-app
                     """
                 }
             }
