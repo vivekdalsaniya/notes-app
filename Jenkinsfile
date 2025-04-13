@@ -2,7 +2,7 @@ pipeline {
     agent { label 'worker' }
 
     environment {
-        DOCKER_IMAGE = 'vivekdalsaniya/notes-app:latest'
+        DOCKER_IMAGE = 'vivekdalsaniya/notes-app'
         DOCKERHUB_CREDS = credentials('dockercreds')  // Your DockerHub creds ID in Jenkins
     }
 
@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     sh "whoami"
-                    sh "docker build -t $DOCKER_IMAGE ."
+                    sh "docker build -t $DOCKER_IMAGE:latest ."
                 }
             }
         }
@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     sh "echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin"
-                    sh "docker push $DOCKER_IMAGE"
+                    sh "docker push $DOCKER_IMAGE:latest"
                 }
             }
         }
@@ -36,10 +36,10 @@ pipeline {
                 script {
                     // Adjust path and commands based on your server setup
                     sh """
-                    docker pull $DOCKER_IMAGE
-                    docker stop notes-app || true
-                    docker rm notes-app || true
-                    docker run -d --name vivekdalsaniya/notes-app -p 8000:8000 vivekdalsaniya/notes-app
+                    docker pull $DOCKER_IMAGE:latest
+                    docker stop $DOCKER_IMAGE || true
+                    docker rm $DOCKER_IMAGE || true
+                    docker run -d --name $DOCKER_IMAGE -p 8000:8000 $DOCKER_IMAGE:latest
                     """
                 }
             }
