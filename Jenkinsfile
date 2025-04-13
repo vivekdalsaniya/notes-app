@@ -24,12 +24,15 @@ pipeline {
 
         stage('Push to DockerHub') {
             steps {
-                script {
-                    sh "echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin"
-                    sh "docker push $DOCKER_IMAGE:latest"
+                withCredentials([usernamePassword(credentialsId: 'dockercreds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                        docker push $DOCKER_IMAGE:latest
+                    '''
                 }
             }
         }
+
 
         stage('Deploy to Server') {
             steps {
