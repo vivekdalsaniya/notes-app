@@ -28,19 +28,3 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: |
           docker push vivekdalsaniya/notes-app:latest
-
-  deploy:
-    runs-on: ubuntu-latest  # Use self-hosted runner for deployment
-    needs: build
-    steps:
-      - name: Pull Docker image
-        run: |
-          docker-compose pull
-
-      - name: Bring down old containers (if any)
-        run: |
-          docker-compose down
-
-      - name: Start containers with Docker Compose
-        run: |
-          docker-compose up -d
