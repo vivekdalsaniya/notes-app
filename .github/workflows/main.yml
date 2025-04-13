@@ -42,5 +42,5 @@ jobs:
           docker pull vivekdalsaniya/notes-app:latest
       - name: Docker run
         run: |
-          docker run -d -p 8000:8000 notes-app:latest
+          docker run -d -p 8000:8000 vivekdalsaniya/notes-app:latest
           echo "Deployment Done.."
