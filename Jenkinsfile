@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'worker' }
+    agent : any
 
     environment {
         DOCKER_IMAGE = 'vivekdalsaniya/notes-app'
