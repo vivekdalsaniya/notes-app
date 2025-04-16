@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'vivekdalsaniya/notes-app'
-        DOCKERHUB_CREDS = credentials('dockercreds')  // Your DockerHub creds ID in Jenkins
+        CONTAINER_NAME = 'notes-app' //  valid container name without slash
+        DOCKERHUB_CREDS = credentials('dockercreds')
     }
 
     stages {
@@ -22,21 +23,17 @@ pipeline {
                     sh '''
                         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
                         docker push $DOCKER_IMAGE:latest
+                        docker logout
                     '''
                 }
             }
         }
 
-
         stage('Deploy to Server') {
             steps {
                 script {
-                    // Adjust path and commands based on your server setup
                     sh """
-                    docker pull $DOCKER_IMAGE:latest
-                    docker stop $DOCKER_IMAGE || true
-                    docker rm $DOCKER_IMAGE || true
-                    docker run -d --name $DOCKER_IMAGE -p 8000:8000 $DOCKER_IMAGE:latest
+                        docker compose up -d
                     """
                 }
             }
@@ -45,7 +42,7 @@ pipeline {
 
     post {
         failure {
-            echo 'Build failed. Check the logs.'
+            echo ' Build failed. Check the logs.'
         }
         success {
             echo ' Build and deployment successful.'
