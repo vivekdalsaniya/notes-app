@@ -1,51 +1,26 @@
 pipeline {
-    agent any
-
+    agent { label 'worker' }
     environment {
-        DOCKER_IMAGE = 'vivekdalsaniya/notes-app'
-        CONTAINER_NAME = 'notes-app' //  valid container name without slash
-        DOCKERHUB_CREDS = credentials('dockercreds')
+        MY_CRED = credentials('dockercreds') 
     }
-
     stages {
-        stage('Build Docker Image') {
+        stage('git clone') {
             steps {
-                script {
-                    sh "whoami"
-                    sh "docker build -t $DOCKER_IMAGE:latest ."
-                }
+                git branch: 'main', url: 'https://github.com/vivekdalsaniya12/django-notes-app.git'
             }
         }
-
-        stage('Push to DockerHub') {
+        stage('Docker Build') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockercreds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh '''
-                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-                        docker push $DOCKER_IMAGE:latest
-                        docker logout
-                    '''
-                }
+                sh 'docker build -t vivekdalsaniya/django-notes-app:latest .'
             }
         }
-
-        stage('Deploy to Server') {
-            steps {
-                script {
-                    sh """
-                        docker compose up -d
-                    """
-                }
+        stage('docker image push'){
+            steps{
+                sh '''
+                    echo $MY_CRED_PSW | docker login -u $MY_CRED_USR --password-stdin
+                    docker push vivekdalsaniya/django-notes-app:latest
+                '''
             }
-        }
-    }
-
-    post {
-        failure {
-            echo ' Build failed. Check the logs.'
-        }
-        success {
-            echo ' Build and deployment successful.'
         }
     }
 }
